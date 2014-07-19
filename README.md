@@ -5,7 +5,7 @@ Choco는 IOCP기반의 서버 프레임워크입니다.
 
 Example
 ----
-```C+++
+```C++
 using namespace Choco;
 
 class Server : public App::Server{
