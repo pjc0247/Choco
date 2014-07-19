@@ -99,6 +99,7 @@
     <ClCompile Include="app_server.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="log.h" />
     <ClInclude Include="server_errno.h" />
     <ClInclude Include="session_client.h" />
     <ClInclude Include="session_errno.h" />
@@ -112,6 +113,7 @@
     <ClCompile Include="db_mysql.cpp" />
     <ClCompile Include="db_pool.cpp" />
     <ClCompile Include="errno.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="session_client.cpp" />
     <ClCompile Include="session_pool.cpp" />
     <ClCompile Include="stdafx.cpp" />

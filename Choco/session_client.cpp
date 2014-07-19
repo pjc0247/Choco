@@ -30,11 +30,10 @@ namespace Session{
 	}
 
 	int Client::initialize(){
-		int ret;
-
 		inbufSize =
 			getConfigAsInteger("inbuf_size");
 
+		/* allcation */
 		inbuf = new(nothrow) char[inbufSize];
 		if( inbuf == nullptr )
 			return AllocationError;
@@ -49,6 +48,7 @@ namespace Session{
 		if( data->socket == INVALID_SOCKET )
 			return SocketError;
 
+		/* socket opt */
 		int val = 0;
 
 		setsockopt(
@@ -63,7 +63,7 @@ namespace Session{
 		memset( &data->ov,0, sizeof(OVERLAPPED) );
 		data->ov.session = this;
 
-		return ret;
+		return 0;
 	}
 	void Client::quit(){
 		if( data == nullptr )
@@ -76,6 +76,7 @@ namespace Session{
 	void Client::reset(SOCKET acceptSocket){
 		BOOL ret;
 
+		/* for re-use socket */
 		TransmitFile(
 			data->socket, nullptr, 0, 0,
 			(OVERLAPPED*)&data->ov, nullptr,
@@ -88,6 +89,36 @@ namespace Session{
 			inbuf, 0,
 			sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
 			nullptr, &data->ov);
+	}
+
+	void Client::write(char *buffer,int len, int flags){
+		WSABUF buf;
+		DWORD written;
+
+		buf.buf = buffer;
+		buf.len = len;
+		data->ov.action = Write;
+
+		WSASend(
+			data->socket,
+			&buf, 1, &data->ov.transffered, flags,
+			nullptr, nullptr);
+	}
+	void Client::read(char *buffer,int len, int flags){
+		WSABUF buf;
+
+		buf.buf = inbuf;
+		buf.len = inbufSize;
+		data->ov.action = Read;
+		data->ov.recvFlags = flags;
+
+		WSARecv(
+			data->socket,
+			&buf, 1, &data->ov.transffered, &data->ov.recvFlags,
+			&data->ov, nullptr);
+	}
+	void Client::read(int flags){
+		read( inbuf,inbufSize, flags );
 	}
 
 	void Client::setUserData(void *_userData){

@@ -31,6 +31,9 @@
     <Filter Include="소스 파일\server">
       <UniqueIdentifier>{4c88c8c5-e4de-40f4-8ffb-d29ae39460a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\logger">
+      <UniqueIdentifier>{a0ef62fd-5c7d-465c-be8f-0f5536994ba7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -96,6 +99,9 @@
     <ClInclude Include="session_errno.h">
       <Filter>소스 파일\session</Filter>
     </ClInclude>
+    <ClInclude Include="log.h">
+      <Filter>소스 파일\logger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="config.cpp">
       <Filter>소스 파일\common</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>소스 파일\logger</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -22,6 +22,8 @@ namespace Choco{
 		};
 		struct OvData : OVERLAPPED{
 			int action;
+			DWORD transffered;
+			DWORD recvFlags;
 			Client *session;
 		};
 
@@ -33,6 +35,12 @@ namespace Choco{
 			int initialize();
 			void quit();
 			void reset(SOCKET acceptSocket);
+
+			void write(char *buffer,int len, int flags =0);
+			/* read from this session, to specific buffer and size */
+			void read(char *buffer,int len, int flags =0);
+			/* read from this session, to default inbuffer */
+			void read(int flags =0);
 
 			void setUserData(void *userData);
 			void *getUserData();

@@ -20,7 +20,7 @@ namespace Choco{
 			int initialize();
 			void quit();
 
-			int run();
+			int run(Interface *handler);
 
 		protected:
 			int initializeWorkers();
@@ -29,8 +29,8 @@ namespace Choco{
 			void quitServer();
 
 			int processAccept(Session::Client *session);
-			int processRead(Session::Client *session);
-			int processWrite(Session::Client *session);
+			int processRead(Session::Client *session, int len);
+			int processWrite(Session::Client *session, int len);
 
 			void worker();
 

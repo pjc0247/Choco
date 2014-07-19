@@ -9,6 +9,8 @@
 
 #include "conig.h"
 
+#include "log.h"
+
 #include <thread>
 #include <mutex>
 
@@ -31,6 +33,8 @@ public:
 	virtual void onReceived(
 		Choco::Session::Client *session,
 		char *data,int len){
+
+		printf("%s\n", data);
 	}
 };
 
@@ -44,14 +48,16 @@ int _tmain(int argc, _TCHAR* argv[]){
 	Choco::configure("session_pool_size", "1");
 
 	Choco::configureDefault();
-	Choco::IO::TCPSocket socket;
 
 	Choco::App::Server server;
 
 	printf("%d\n", server.initialize());
 
-	int ret = server.run();
+	App *app = new App();
+	int ret = server.run(app);
 	printf("%d\n", ret);
+
+	Choco::Log::output("asdf");
 
 	while(true)
 		Sleep(100);

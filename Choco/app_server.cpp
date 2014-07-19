@@ -53,7 +53,9 @@ namespace App{
 		quitWorkers();
 	}
 
-	int Server::run(){
+	int Server::run(Interface *_handler){
+		handler = _handler;
+
 		sessionPool.iterate( [this](Session::Client *session){
 			session->reset( data->socket );
 		});
@@ -184,28 +186,34 @@ namespace App{
 
 		HANDLE hRet;
 		hRet = CreateIoCompletionPort(
-			(HANDLE)session->getSocket(),
-			data->iocp, 0,0);
+			(HANDLE)session->getSocket(),data->iocp,
+			(ULONG_PTR)0,0);
 		if( hRet == INVALID_HANDLE_VALUE )
 			return IocpError;
 
 		/* ready to receive */
-		//socket->read(0);
+		session->read();
 
 		return 0;
 	}
-	int Server::processRead(Session::Client *session){
+	int Server::processRead(Session::Client *session, int len){
+		handler->onReceived(
+			session,
+			session->getBuffer(), len);
+		session->read();
+
 		return 0;
 	}
-	int Server::processWrite(Session::Client *session){
+	int Server::processWrite(Session::Client *session, int len){
+
 		return 0;
 	}
 
 	void Server::worker(){
 		while( true ){
 			BOOL ret;
-			DWORD tranferred;
-			DWORD key;
+			DWORD tranferred; /* bytes transferred */
+			DWORD key; /* IOCP key */
 			Session::OvData *ov;
 
 			ret = GetQueuedCompletionStatus(
@@ -214,18 +222,28 @@ namespace App{
 				(PULONG_PTR)&key, (OVERLAPPED**)&ov,
 				INFINITE);
 
-			if( !ret )
+			/* something went wrong
+			   maybe connection was lost */
+			if( !ret ){
+				/* reset for next connection
+				   and return to pool */
+				if( ov != nullptr ){
+					ov->session->reset(
+						data->socket );
+				}
+
 				continue;
-			
+			}
+	
 			switch( ov->action ){
 			case Session::Accept:
 				processAccept( ov->session );
 				break;
 			case Session::Read:
-				processRead( ov->session );
+				processRead( ov->session, tranferred );
 				break;
 			case Session::Write:
-				processWrite( ov->session );
+				processWrite( ov->session, tranferred );
 				break;
 			}
 		}
